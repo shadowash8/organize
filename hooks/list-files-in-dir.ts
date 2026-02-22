@@ -1,28 +1,15 @@
-import { Directory, File } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
-function printDirectory(directory: Directory, allFiles: string[] = []) {
-    const contents = directory.list();
-    for (const item of contents) {
-        if (item instanceof Directory) {
-            printDirectory(item, allFiles);
-        } else if (item instanceof File) {
-            allFiles.push(item.name);
-        }
-    }
-    return allFiles;
-}
-
-export default async function listFilesInDir() {
+export default async function listFilesInDir(safUri: string) {
     try {
-        const directory = await Directory.pickDirectoryAsync();
+        const contents = await FileSystem.StorageAccessFramework.readDirectoryAsync(safUri);
 
-        if (directory) {
-            const fileList = printDirectory(directory);
-
-            console.log("Final File List:", fileList);
-            return fileList; // This now returns to your index.tsx!
-        }
+        return contents;
     } catch (error) {
         console.error(error);
     }
 }
+
+/* NOTE if only want the file names then
+ * const names = contents.map(uri => decodeURIComponent(uri).split('/').pop() ?? '');
+*/
