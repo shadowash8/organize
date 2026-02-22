@@ -1,31 +1,81 @@
 import { OrgItem } from '@/types/org';
 import { useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 
 function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.ReactNode }) {
     const [open, setOpen] = useState(true);
+    const borderColor = useThemeColor({ light: '#e0e0e0', dark: '#333' }, 'background');
+    const iconColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
+    const todoColor = item.todoKeyword === 'DONE' ? '#888' : '#f59e0b';
 
     return (
-        <View style={{ marginLeft: (item.level - 1) * 16 }}>
-            <TouchableOpacity onPress={() => setOpen(o => !o)} style={{ flexDirection: 'row', gap: 4 }}>
-                <ThemedText>{children ? (open ? '▾' : '▸') : '•'}</ThemedText>
-                <ThemedText>{item.title}</ThemedText>
-                {item.todoKeyword && <ThemedText>[{item.todoKeyword}]</ThemedText>}
+        <View style={{ marginLeft: (item.level - 1) * 12 }}>
+            <TouchableOpacity
+                onPress={() => setOpen(o => !o)}
+                style={styles.row}
+                disabled={!children}
+            >
+                {children
+                    ? <IconSymbol name={open ? 'chevron.down' : 'chevron.right'} size={18} color={iconColor} />
+                    : <IconSymbol name='circle.fill' size={6} color={iconColor} style={{ marginHorizontal: 6 }} />
+                }
+                {item.todoKeyword && (
+                    <ThemedText style={[styles.keyword, { color: todoColor }]}>
+                        {item.todoKeyword}
+                    </ThemedText>
+                )}
+                <ThemedText style={[styles.title, item.todoKeyword === 'DONE' && styles.done]}>
+                    {item.title}
+                </ThemedText>
             </TouchableOpacity>
-            {open && children}
+
+            {open && children && (
+                <View style={[styles.children, { borderLeftColor: borderColor }]}>
+                    {children}
+                </View>
+            )}
         </View>
     );
 }
+const styles = StyleSheet.create({
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingVertical: 5,
+    },
+    arrow: {
+        fontSize: 12,
+        width: 12,
+    },
+    keyword: {
+        fontSize: 11,
+        fontWeight: 'bold',
+    },
+    title: {
+        fontSize: 14,
+        flex: 1,
+    },
+    done: {
+        textDecorationLine: 'line-through',
+        opacity: 0.5,
+    },
+    children: {
+        borderLeftWidth: 1,
+        marginLeft: 6,
+        paddingLeft: 8,
+    },
+});
 
 export function OrgTree({ items }: { items: OrgItem[] }) {
     function buildTree(items: OrgItem[], level: number, index: number): [React.ReactNode[], number] {
         const nodes: React.ReactNode[] = [];
-
         while (index < items.length) {
             const item = items[index];
             if (item.level < level) break;
-
             if (item.level === level) {
                 index++;
                 const [children, newIndex] = buildTree(items, level + 1, index);
@@ -39,7 +89,6 @@ export function OrgTree({ items }: { items: OrgItem[] }) {
                 break;
             }
         }
-
         return [nodes, index];
     }
 

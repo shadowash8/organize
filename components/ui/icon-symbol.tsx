@@ -17,7 +17,9 @@ const MAPPING = {
     'house.fill': 'home',
     'calendar.fill': 'calendar-month',
     'chevron.left.forwardslash.chevron.right': 'code',
+    'chevron.down': 'expand-more',
     'chevron.right': 'chevron-right',
+    'circle.fill': 'circle',
 } as IconMapping;
 
 /**

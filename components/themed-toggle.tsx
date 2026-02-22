@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, type ViewProps } from 'react-native';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { ThemedText } from '@/components/themed-text';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 
 export type ThemedToggleProps = ViewProps & {
     lightColor?: string;
@@ -23,6 +24,7 @@ export function ThemedToggle({
     const [open, setOpen] = useState(defaultOpen);
     const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
     const borderColor = useThemeColor({ light: '#e0e0e0', dark: '#333' }, 'background');
+    const iconColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
 
     return (
         <View style={[styles.container, { backgroundColor }, style]} {...otherProps}>
@@ -30,7 +32,11 @@ export function ThemedToggle({
                 onPress={() => setOpen(o => !o)}
                 style={[styles.heading, { borderColor }]}
             >
-                <ThemedText style={styles.arrow}>{open ? '▾' : '▸'}</ThemedText>
+                <IconSymbol
+                    name={open ? 'chevron.down' : 'chevron.right'}
+                    size={18}
+                    color={iconColor}
+                />
                 <ThemedText style={styles.headingText}>{heading}</ThemedText>
             </TouchableOpacity>
 
@@ -64,7 +70,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     content: {
-        paddingHorizontal: 6,
+        paddingHorizontal: 16,
         paddingVertical: 4,
         borderLeftWidth: 1,
         marginLeft: 2,
