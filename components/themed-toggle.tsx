@@ -26,6 +26,9 @@ export function ThemedToggle({
     const borderColor = useThemeColor({ light: '#e0e0e0', dark: '#333' }, 'background');
     const iconColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
 
+    const name = heading.split('/').pop()?.replace('.org', '') ?? heading;
+    const prettyHeading = name.charAt(0).toUpperCase() + name.slice(1);
+
     return (
         <View style={[styles.container, { backgroundColor }, style]} {...otherProps}>
             <TouchableOpacity
@@ -37,7 +40,7 @@ export function ThemedToggle({
                     size={18}
                     color={iconColor}
                 />
-                <ThemedText style={styles.headingText}>{heading}</ThemedText>
+                <ThemedText style={styles.headingText}>{prettyHeading}</ThemedText>
             </TouchableOpacity>
 
             {open && (

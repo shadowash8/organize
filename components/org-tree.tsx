@@ -4,6 +4,7 @@ import { TouchableOpacity, View, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { RenderLinks } from '@/components/org-links';
 
 function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.ReactNode }) {
     const [open, setOpen] = useState(true);
@@ -31,9 +32,7 @@ function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.React
                                 {item.todoKeyword}
                             </ThemedText>
                         )}
-                        <ThemedText style={[styles.title, (item.todoKeyword === 'DONE' || item.todoKeyword === 'CANC') && styles.done]}>
-                            {item.title}
-                        </ThemedText>
+                        <RenderLinks title={item.title} style={[styles.title, (item.todoKeyword === 'DONE' || item.todoKeyword === 'CANC') && styles.done]} />
                     </View>
                     {item.deadline && (
                         <ThemedText style={{ paddingLeft: 30, fontSize: 12, opacity: 0.6 }}>
