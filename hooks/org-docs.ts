@@ -62,7 +62,9 @@ export async function getOrgItems(refresh = false): Promise<OrgItem[]> {
 
     for (const uri of paths) {
         const content = await readOrgFile(uri);
-        const ast = parse(content);
+        const ast = parse(content, {
+            todoKeywords: ['TODO', 'WORKING', 'WAIT', 'IDEA', 'DONE', 'CANC']
+        });
         const items = extractItems(ast, uri);
         allItems.push(...items);
     }

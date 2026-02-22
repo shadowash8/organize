@@ -9,7 +9,7 @@ function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.React
     const [open, setOpen] = useState(true);
     const borderColor = useThemeColor({ light: '#e0e0e0', dark: '#333' }, 'background');
     const iconColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
-    const todoColor = item.todoKeyword === 'DONE' ? '#888' : '#f59e0b';
+    const todoColor = item.todoKeyword === 'DONE' || item.todoKeyword === 'CANC' ? '#888' : '#f59e0b';
 
     return (
         <View style={{ marginLeft: (item.level - 1) * 8 }}>
@@ -26,13 +26,12 @@ function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.React
                             ? <IconSymbol name={open ? 'chevron.down' : 'chevron.right'} size={18} color={iconColor} />
                             : <IconSymbol name='circle.fill' size={6} color={iconColor} style={{ marginHorizontal: 6 }} />
                         }
-                        <ThemedText style={[styles.title, item.todoKeyword === 'DONE' && styles.done]}>
-                            {item.todoKeyword && (
-                                <ThemedText style={[styles.keyword, { color: todoColor }]}>
-                                    {item.todoKeyword}
-                                </ThemedText>
-                            )}
-                            {'  '}
+                        {item.todoKeyword && (
+                            <ThemedText style={[styles.keyword, { color: todoColor }]}>
+                                {item.todoKeyword}
+                            </ThemedText>
+                        )}
+                        <ThemedText style={[styles.title, (item.todoKeyword === 'DONE' || item.todoKeyword === 'CANC') && styles.done]}>
                             {item.title}
                         </ThemedText>
                     </View>
