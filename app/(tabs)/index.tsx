@@ -1,40 +1,48 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import filePicker from '@/hooks/file-picker';
-import { getOrgDocsPaths, readOrgFile } from '@/hooks/org-docs';
+import { getOrgItems, getOrgDocsPaths } from '@/hooks/org-docs';
 import { useEffect, useState } from 'react';
-import { Button, FlatList } from 'react-native';
+import { Button, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { OrgItem } from '@/types/org';
+import { OrgTree } from '@/components/org-tree';
+import { ThemedToggle } from '@/components/themed-toggle';
+
 
 export default function HomeScreen() {
-    const [files, setFiles] = useState<{ uri: string; content: string }[]>([]);
+    const [items, setItems] = useState<OrgItem[]>([]);
+    const [paths, setPaths] = useState<string[]>([]);
+
 
     useEffect(() => {
-        const loadFolder = async () => {
-            const paths = await getOrgDocsPaths();
+        const load = async () => {
+            const p = await getOrgDocsPaths();
+            setPaths(p);
 
-            const contents = await Promise.all(
-                paths.map(async (uri) => ({
-                    uri,
-                    content: await readOrgFile(uri),
-                }))
-            );
-            setFiles(contents);
+            setItems(await getOrgItems());
         };
-        loadFolder();
+        load();
     }, []);
+
 
     return (
         <SafeAreaView>
-            <ThemedView>
-                <ThemedText>HII im here</ThemedText>
-                <Button onPress={() => filePicker()} title="Select File" />
-                <FlatList
-                    data={files}
-                    renderItem={({ item }) => (
-                        <ThemedText>{item.content}</ThemedText>
-                    )}
-                />
+            <ThemedView style={{ padding: 8 }}>
+                <ScrollView>
+                    <ThemedText type='title'>Notes</ThemedText>
+                    {paths.map(uri => {
+                        const name = decodeURIComponent(uri).split('/').pop() ?? uri;
+                        const fileItems = items.filter(i => i.sourceUri === uri);
+                        return (
+                            <ThemedView key={uri}>
+                                <ThemedToggle key={uri} heading={name}>
+                                    <OrgTree items={fileItems} />
+                                </ThemedToggle>
+                            </ThemedView>
+                        );
+                    })}
+                </ScrollView>
             </ThemedView>
         </SafeAreaView>
     );
