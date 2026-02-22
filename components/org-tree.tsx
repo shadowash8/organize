@@ -12,24 +12,42 @@ function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.React
     const todoColor = item.todoKeyword === 'DONE' ? '#888' : '#f59e0b';
 
     return (
-        <View style={{ marginLeft: (item.level - 1) * 12 }}>
+        <View style={{ marginLeft: (item.level - 1) * 8 }}>
             <TouchableOpacity
                 onPress={() => setOpen(o => !o)}
                 style={styles.row}
                 disabled={!children}
             >
-                {children
-                    ? <IconSymbol name={open ? 'chevron.down' : 'chevron.right'} size={18} color={iconColor} />
-                    : <IconSymbol name='circle.fill' size={6} color={iconColor} style={{ marginHorizontal: 6 }} />
-                }
-                {item.todoKeyword && (
-                    <ThemedText style={[styles.keyword, { color: todoColor }]}>
-                        {item.todoKeyword}
-                    </ThemedText>
-                )}
-                <ThemedText style={[styles.title, item.todoKeyword === 'DONE' && styles.done]}>
-                    {item.title}
-                </ThemedText>
+
+                <View style={{ flexDirection: 'column' }}>
+                    <View style={styles.row}
+                    >
+                        {children
+                            ? <IconSymbol name={open ? 'chevron.down' : 'chevron.right'} size={18} color={iconColor} />
+                            : <IconSymbol name='circle.fill' size={6} color={iconColor} style={{ marginHorizontal: 6 }} />
+                        }
+                        <ThemedText style={[styles.title, item.todoKeyword === 'DONE' && styles.done]}>
+                            {item.todoKeyword && (
+                                <ThemedText style={[styles.keyword, { color: todoColor }]}>
+                                    {item.todoKeyword}
+                                </ThemedText>
+                            )}
+                            {'  '}
+                            {item.title}
+                        </ThemedText>
+                    </View>
+                    {item.deadline && (
+                        <ThemedText style={{ paddingLeft: 30, fontSize: 12, opacity: 0.6 }}>
+                            deadline: {item.deadline.year}-{item.deadline.month}-{item.deadline.day}
+                        </ThemedText>
+                    )}
+                    {item.scheduled && (
+                        <ThemedText style={{ paddingLeft: 30, fontSize: 12, opacity: 0.6 }}>
+                            scheduled: {item.scheduled.year}-{item.scheduled.month}-{item.scheduled.day}
+                        </ThemedText>
+                    )}
+                </View>
+
             </TouchableOpacity>
 
             {open && children && (
@@ -57,7 +75,6 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 14,
-        flex: 1,
     },
     done: {
         textDecorationLine: 'line-through',
