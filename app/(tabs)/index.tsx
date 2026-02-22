@@ -1,9 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import filePicker from '@/hooks/file-picker';
 import { getOrgItems, getOrgDocsPaths } from '@/hooks/org-docs';
 import { useEffect, useState } from 'react';
-import { Button, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OrgItem } from '@/types/org';
 import { OrgTree } from '@/components/org-tree';
@@ -25,12 +23,10 @@ export default function HomeScreen() {
         load();
     }, []);
 
-
     return (
         <SafeAreaView>
             <ThemedView style={{ padding: 8 }}>
                 <ScrollView>
-                    <ThemedText type='title'>Notes</ThemedText>
                     {paths.map(uri => {
                         const name = decodeURIComponent(uri).split('/').pop() ?? uri;
                         const fileItems = items.filter(i => i.sourceUri === uri);
