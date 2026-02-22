@@ -2,7 +2,6 @@ import { ThemedView } from '@/components/themed-view';
 import { getOrgItems, getOrgDocsPaths } from '@/hooks/org-docs';
 import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { OrgItem } from '@/types/org';
 import { OrgTree } from '@/components/org-tree';
 import { ThemedToggle } from '@/components/themed-toggle';
@@ -24,22 +23,20 @@ export default function HomeScreen() {
     }, []);
 
     return (
-        <SafeAreaView>
-            <ThemedView style={{ padding: 8 }}>
-                <ScrollView>
-                    {paths.map(uri => {
-                        const name = decodeURIComponent(uri).split('/').pop() ?? uri;
-                        const fileItems = items.filter(i => i.sourceUri === uri);
-                        return (
-                            <ThemedView key={uri}>
-                                <ThemedToggle key={uri} heading={name}>
-                                    <OrgTree items={fileItems} />
-                                </ThemedToggle>
-                            </ThemedView>
-                        );
-                    })}
-                </ScrollView>
-            </ThemedView>
-        </SafeAreaView>
+        <ThemedView style={{ paddingHorizontal: 8 }}>
+            <ScrollView>
+                {paths.map(uri => {
+                    const name = decodeURIComponent(uri).split('/').pop() ?? uri;
+                    const fileItems = items.filter(i => i.sourceUri === uri);
+                    return (
+                        <ThemedView key={uri}>
+                            <ThemedToggle key={uri} heading={name}>
+                                <OrgTree items={fileItems} />
+                            </ThemedToggle>
+                        </ThemedView>
+                    );
+                })}
+            </ScrollView>
+        </ThemedView>
     );
 }
