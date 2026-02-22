@@ -5,7 +5,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useEffect, useState } from 'react';
-import { getData, removeData, storeData } from '@/hooks/storage';
+import { getData, storeData } from '@/hooks/storage';
 import { Directory } from 'expo-file-system';
 import { Alert, BackHandler } from 'react-native';
 
