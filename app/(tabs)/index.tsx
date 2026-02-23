@@ -17,7 +17,7 @@ export default function HomeScreen() {
             const p = await getOrgDocsPaths();
             setPaths(p);
 
-            setItems(await getOrgItems());
+            setItems(await getOrgItems(true));
         };
         load();
     }, []);
