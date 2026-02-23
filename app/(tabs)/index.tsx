@@ -1,7 +1,7 @@
 import { ThemedView } from '@/components/themed-view';
 import { getOrgItems, getOrgDocsPaths } from '@/hooks/org-docs';
-import { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { RefreshControl, ScrollView } from 'react-native';
 import { OrgItem } from '@/types/org';
 import { OrgTree } from '@/components/org-tree';
 import { ThemedToggle } from '@/components/themed-toggle';
@@ -10,7 +10,13 @@ import { ThemedToggle } from '@/components/themed-toggle';
 export default function HomeScreen() {
     const [items, setItems] = useState<OrgItem[]>([]);
     const [paths, setPaths] = useState<string[]>([]);
+    const [refreshing, setRefreshing] = useState(false);
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        setItems(await getOrgItems(true));
+        setRefreshing(false);
+    }, []);
 
     useEffect(() => {
         const load = async () => {
@@ -24,7 +30,10 @@ export default function HomeScreen() {
 
     return (
         <ThemedView style={{ paddingHorizontal: 8 }}>
-            <ScrollView>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }>
                 {paths.map(uri => {
                     const file = decodeURIComponent(uri).split('/').pop() ?? uri;
                     const name = file.split('/').pop()?.replace('.org', '') ?? uri;
