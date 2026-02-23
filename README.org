@@ -1,0 +1,29 @@
+TITLE: Organize
+
+* Organize
+A all in one mobile app to read your org notes and agenda in a beautiful manner on your phone
+
+* Features
+1. Home page listing all the items in your org folder
+2. Agenda view to see all your events
+3. Not stare at a terminal screen on your phone!!
+
+* Stack
+- React Native with Expo
+- uniorg-parse
+- react-native-big-calendar
+- AsyncStorage
+
+* Setup
+#+begin_src bash
+npm install
+npx expo start
+#+end_src
+
+Select your org folder when prompted on first launch.
+
+* Custom Todo Keywords
+Add to your org files:
+#+begin_src org
+#+TODO: TODO WORKING WAIT IDEA | DONE CANC
+#+end_src
