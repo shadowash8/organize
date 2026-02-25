@@ -1,0 +1,39 @@
+import {
+	ActivityIndicator,
+	StyleSheet,
+	View,
+	type ViewProps,
+} from "react-native";
+import { useThemeColor } from "@/hooks/use-theme-color";
+
+export type ThemedLoaderProps = ViewProps & {
+	lightColor?: string;
+	darkColor?: string;
+	size?: "small" | "large";
+	center?: boolean;
+};
+
+export function ThemedLoader({
+	style,
+	lightColor,
+	darkColor,
+	size = "small",
+	center = false,
+	...rest
+}: ThemedLoaderProps) {
+	const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+
+	return (
+		<View style={[center && styles.center, style]} {...rest}>
+			<ActivityIndicator size={size} color={color} />
+		</View>
+	);
+}
+
+const styles = StyleSheet.create({
+	center: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+});
