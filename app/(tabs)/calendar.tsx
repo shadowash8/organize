@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native';
+import { TouchableOpacity, ToastAndroid } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { Calendar } from 'react-native-big-calendar';
 import { getOrgItems } from '@/hooks/org-docs';
@@ -28,7 +28,7 @@ export default function TabTwoScreen() {
     const events = useMemo(() => uniOrgToCalendar(items), [items]);
 
     return (
-        <ThemedView style={styles.titleContainer}>
+        <ThemedView style={{ height: "100%" }}>
             <Stack.Screen options={{
                 headerRight: () => (
                     <TouchableOpacity onPress={() => getItems(true)} disabled={refreshing} style={{ marginRight: 12 }}>
@@ -45,10 +45,3 @@ export default function TabTwoScreen() {
         </ThemedView>
     );
 }
-
-const styles = StyleSheet.create({
-    titleContainer: {
-        flexDirection: 'column',
-        gap: 8,
-    },
-});

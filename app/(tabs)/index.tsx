@@ -29,7 +29,7 @@ export default function HomeScreen() {
     }, []);
 
     return (
-        <ThemedView style={{ paddingHorizontal: 8 }}>
+        <ThemedView style={{ padding: 8, height: "100%" }}>
             <ScrollView
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
