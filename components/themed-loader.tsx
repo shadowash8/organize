@@ -21,7 +21,7 @@ export function ThemedLoader({
 	center = false,
 	...rest
 }: ThemedLoaderProps) {
-	const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+	const color = useThemeColor({ light: lightColor, dark: darkColor }, "accent");
 
 	return (
 		<View style={[center && styles.center, style]} {...rest}>

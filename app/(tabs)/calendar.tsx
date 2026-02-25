@@ -8,10 +8,32 @@ import { OrgItem } from "@/types/org";
 import { Stack } from "expo-router";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedLoader } from "@/components/themed-loader";
+import { useThemeColor } from "@/hooks/use-theme-color";
 
-export default function TabTwoScreen() {
+export default function CalendarScreen() {
 	const [items, setItems] = useState<OrgItem[]>([]);
 	const [refreshing, setRefreshing] = useState(false);
+
+	// colors
+	const accent = useThemeColor({}, "accent");
+	const bg = useThemeColor({}, "background");
+	const text = useThemeColor({}, "text");
+
+	const calendarTheme = useMemo(
+		() => ({
+			palette: {
+				primary: { main: accent, contrastText: bg },
+				gray: {
+					"100": text,
+					"200": text,
+					"300": text,
+					"500": text,
+					"800": text,
+				},
+			},
+		}),
+		[accent, bg, text],
+	);
 
 	const getItems = useCallback(async (refresh = false) => {
 		setRefreshing(true);
@@ -42,13 +64,18 @@ export default function TabTwoScreen() {
 							disabled={refreshing}
 							style={{ marginRight: 12 }}
 						>
-							<IconSymbol name="arrow.clockwise" size={20} color="#0a7ea4" />
+							<IconSymbol name="arrow.clockwise" size={20} color={accent} />
 						</TouchableOpacity>
 					),
 				}}
 			/>
 
-			<Calendar events={events} height={600} mode="schedule" />
+			<Calendar
+				events={events}
+				height={600}
+				mode="schedule"
+				theme={calendarTheme}
+			/>
 		</ThemedView>
 	);
 }
