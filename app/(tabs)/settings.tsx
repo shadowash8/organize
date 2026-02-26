@@ -35,7 +35,7 @@ export default function SettingsScreen() {
         : "None selected";
 
     return (
-        <ThemedView style={{ height: "100%" }}>
+        <ThemedView style={{ padding: 10, height: "100%" }}>
             <ScrollView>
                 <ThemedSectionRow
                     title="Org Folder"
