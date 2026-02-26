@@ -3,15 +3,12 @@ import { ScrollView } from "react-native";
 import { ThemedButton } from "@/components/themed-button";
 import { useEffect, useState } from "react";
 import { getData, storeData } from "@/hooks/storage";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { ThemedSectionRow } from "@/components/themed-setion-row";
 import { Directory } from "expo-file-system";
 import { clearOrgCache, getOrgItems } from "@/hooks/org-docs";
 
 export default function SettingsScreen() {
     const [folderUri, setFolderUri] = useState<string | null>(null);
-    const border = useThemeColor({}, "border");
-
 
     useEffect(() => {
         getData("org_folder_uri").then(setFolderUri);
