@@ -35,12 +35,18 @@ export default function SettingsScreen() {
         : "None selected";
 
     return (
-        <ThemedView style={{ padding: 8, height: "100%" }}>
+        <ThemedView style={{ height: "100%" }}>
             <ScrollView>
                 <ThemedSectionRow
                     title="Org Folder"
                     description={name}
                     action={<ThemedButton title="Change" onPress={changeFolder} />}
+                />
+
+                <ThemedSectionRow
+                    title="Clear Cache Data"
+                    description="Clear the saved data from cache"
+                    action={<ThemedButton title="Clear" variant="alert" onPress={() => clearOrgCache()} />}
                 />
             </ScrollView>
         </ThemedView >

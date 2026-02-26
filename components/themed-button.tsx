@@ -5,7 +5,7 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 type ThemedButtonProps = {
     title: string;
     onPress?: () => void;
-    variant?: "primary" | "ghost";
+    variant?: "primary" | "alert" | "ghost";
 };
 
 export function ThemedButton({ title, onPress, variant = "primary" }: ThemedButtonProps) {
@@ -20,6 +20,7 @@ export function ThemedButton({ title, onPress, variant = "primary" }: ThemedButt
                 styles.button,
                 { backgroundColor: bg },
                 variant === "ghost" && { borderWidth: 1, borderColor: border },
+                variant === "alert" && { backgroundColor: "#c53e3e" }
             ]}
         >
             <ThemedText style={{ color: text, fontWeight: "600" }}>{title}</ThemedText>
