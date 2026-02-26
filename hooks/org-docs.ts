@@ -3,6 +3,7 @@ import listFilesInDir from '@/hooks/list-files-in-dir';
 import { getData, storeData } from '@/hooks/storage';
 import { parse } from 'uniorg-parse/lib/parser';
 import { OrgItem } from '@/types/org';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function extractItems(ast: any, sourceUri: string): OrgItem[] {
     const items: OrgItem[] = [];
@@ -103,4 +104,8 @@ export async function getOrgDocsPaths(refresh = false) {
     const orgFiles = (result ?? []).filter(uri => uri.endsWith('.org'));
     await storeData('org_docs_path', JSON.stringify(orgFiles));
     return orgFiles;
+}
+
+export async function clearOrgCache() {
+    await AsyncStorage.multiRemove(["org_docs", "org_docs_path", "org_items"]);
 }

@@ -21,6 +21,7 @@ const MAPPING = {
     'chevron.right': 'chevron-right',
     'arrow.clockwise': 'refresh',
     'circle.fill': 'circle',
+    'gear.fill': 'settings',
 } as IconMapping;
 
 /**

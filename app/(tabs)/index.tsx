@@ -1,59 +1,61 @@
 import { ThemedView } from "@/components/themed-view";
 import { getOrgItems, getOrgDocsPaths } from "@/hooks/org-docs";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, RefreshControl, ScrollView } from "react-native";
+import { RefreshControl, ScrollView } from "react-native";
 import { OrgItem } from "@/types/org";
 import { OrgTree } from "@/components/org-tree";
 import { ThemedToggle } from "@/components/themed-toggle";
 import { ThemedLoader } from "@/components/themed-loader";
 
 export default function HomeScreen() {
-	const [items, setItems] = useState<OrgItem[]>([]);
-	const [paths, setPaths] = useState<string[]>([]);
-	const [refreshing, setRefreshing] = useState(false);
+    const [items, setItems] = useState<OrgItem[]>([]);
+    const [paths, setPaths] = useState<string[]>([]);
+    const [refreshing, setRefreshing] = useState(false);
 
-	const onRefresh = useCallback(async () => {
-		setRefreshing(true);
-		setItems(await getOrgItems(true));
-		setRefreshing(false);
-	}, []);
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        const p = await getOrgDocsPaths(true);
+        setPaths(p);
+        setItems(await getOrgItems(true));
+        setRefreshing(false);
+    }, []);
 
-	useEffect(() => {
-		const load = async () => {
-			const p = await getOrgDocsPaths();
-			setPaths(p);
+    useEffect(() => {
+        const load = async () => {
+            const p = await getOrgDocsPaths();
+            setPaths(p);
 
-			setItems(await getOrgItems(true));
-		};
-		load();
-	}, []);
+            setItems(await getOrgItems(true));
+        };
+        load();
+    }, []);
 
-	if (refreshing) {
-		return <ThemedLoader center size="large" />;
-	}
+    if (refreshing) {
+        return <ThemedLoader center size="large" />;
+    }
 
-	return (
-		<ThemedView style={{ padding: 8, height: "100%" }}>
-			<ScrollView
-				refreshControl={
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-				}
-			>
-				{paths.map((uri) => {
-					const file = decodeURIComponent(uri).split("/").pop() ?? uri;
-					const name = file.split("/").pop()?.replace(".org", "") ?? uri;
-					const display = name.charAt(0).toUpperCase() + name.slice(1);
+    return (
+        <ThemedView style={{ padding: 8, height: "100%" }}>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            >
+                {paths.map((uri) => {
+                    const file = decodeURIComponent(uri).split("/").pop() ?? uri;
+                    const name = file.split("/").pop()?.replace(".org", "") ?? uri;
+                    const display = name.charAt(0).toUpperCase() + name.slice(1);
 
-					const fileItems = items.filter((i) => i.sourceUri === uri);
-					return (
-						<ThemedView key={uri}>
-							<ThemedToggle key={uri} heading={display} defaultOpen={false}>
-								<OrgTree items={fileItems} />
-							</ThemedToggle>
-						</ThemedView>
-					);
-				})}
-			</ScrollView>
-		</ThemedView>
-	);
+                    const fileItems = items.filter((i) => i.sourceUri === uri);
+                    return (
+                        <ThemedView key={uri}>
+                            <ThemedToggle key={uri} heading={display} defaultOpen={false}>
+                                <OrgTree items={fileItems} />
+                            </ThemedToggle>
+                        </ThemedView>
+                    );
+                })}
+            </ScrollView>
+        </ThemedView>
+    );
 }
