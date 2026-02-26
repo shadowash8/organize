@@ -15,15 +15,18 @@ export default function SettingsScreen() {
     }, []);
 
     const changeFolder = async () => {
-        const directory = await Directory.pickDirectoryAsync();
-
-        if (directory) {
-            await storeData("org_folder_uri", directory.uri);
-            setFolderUri(directory.uri);
-            await clearOrgCache();
-            await getOrgItems(true);
+        try {
+            const directory = await Directory.pickDirectoryAsync();
+            if (directory) {
+                await storeData("org_folder_uri", directory.uri);
+                setFolderUri(directory.uri);
+                await clearOrgCache();
+                await getOrgItems(true);
+            }
+        } catch (e) {
+            // user cancelled, do nothing
         }
-    }
+    };
 
     const name = folderUri
         ? decodeURIComponent(folderUri)
