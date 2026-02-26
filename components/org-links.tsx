@@ -2,10 +2,12 @@
 import { Linking } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import React from 'react';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export function renderLinks(title: string) {
     const linkRegex = /\[\[([^\]]+)\]\[([^\]]+)\]\]/g;
     const parts: React.ReactNode[] = [];
+    const accent = useThemeColor({}, "accent");
     let last = 0;
     let match;
 
@@ -15,7 +17,7 @@ export function renderLinks(title: string) {
         parts.push(
             <ThemedText
                 key={match.index}
-                style={{ color: '#0a7ea4', textDecorationLine: 'underline' }}
+                style={{ color: accent, textDecorationLine: 'underline' }}
                 onPress={() => Linking.openURL(url)}
             >
                 {label}
