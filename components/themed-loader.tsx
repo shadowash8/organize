@@ -1,11 +1,9 @@
 import {
-    ActivityIndicator,
     StyleSheet,
-    View,
     type ViewProps,
 } from "react-native";
-import { useThemeColor } from "@/hooks/use-theme-color";
 import { ThemedView } from "./themed-view";
+import { Host, CircularProgress } from '@expo/ui/jetpack-compose';
 
 export type ThemedLoaderProps = ViewProps & {
     lightColor?: string;
@@ -18,15 +16,15 @@ export function ThemedLoader({
     style,
     lightColor,
     darkColor,
-    size = "small",
     center = false,
     ...rest
 }: ThemedLoaderProps) {
-    const color = useThemeColor({ light: lightColor, dark: darkColor }, "accent");
 
     return (
         <ThemedView style={[center && styles.center, style]} {...rest}>
-            <ActivityIndicator size={size} color={color} />
+            <Host matchContents>
+                <CircularProgress />
+            </Host>
         </ThemedView >
     );
 }
