@@ -9,12 +9,14 @@ import { Stack } from "expo-router";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedLoader } from "@/components/themed-loader";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { useFocusEffect } from "@react-navigation/native";
+import { getData } from "@/hooks/storage";
 
 export default function CalendarScreen() {
     const [items, setItems] = useState<OrgItem[]>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [calendarHeight, setCalendarHeight] = useState(0);
-
+    const [mode, setMode] = useState<"schedule" | "week" | "month">("schedule");
 
     // colors
     const accent = useThemeColor({}, "accent");
@@ -50,6 +52,14 @@ export default function CalendarScreen() {
         getItems();
     }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            getData("calendar_view").then((v) => {
+                if (v) setMode(v as any);
+            });
+        }, []),
+    );
+
     const events = useMemo(() => uniOrgToCalendar(items), [items]);
 
     if (refreshing) {
@@ -57,7 +67,8 @@ export default function CalendarScreen() {
     }
 
     return (
-        <ThemedView style={{ height: "100%" }}
+        <ThemedView
+            style={{ height: "100%" }}
             onLayout={(e) => setCalendarHeight(e.nativeEvent.layout.height)}
         >
             <Stack.Screen
@@ -68,7 +79,11 @@ export default function CalendarScreen() {
                             disabled={refreshing}
                             style={{ marginRight: 12 }}
                         >
-                            <IconSymbol name="arrow.clockwise" size={20} color={accent} />
+                            <IconSymbol
+                                name="arrow.clockwise"
+                                size={20}
+                                color={accent}
+                            />
                         </TouchableOpacity>
                     ),
                 }}
@@ -77,7 +92,7 @@ export default function CalendarScreen() {
             <Calendar
                 events={events}
                 height={calendarHeight}
-                mode="schedule"
+                mode={mode}
                 theme={calendarTheme}
             />
         </ThemedView>
