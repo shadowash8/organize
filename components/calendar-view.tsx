@@ -22,11 +22,7 @@ export function CalendarViewPicker({
 
     return (
         <Host matchContents>
-            <ThemedButton
-                title={value}
-                onPress={() => setOpen(true)}
-                variant="ghost"
-            />
+            <ThemedButton title={value} onPress={() => setOpen(true)} />
             {open && (
                 <ModalBottomSheet onDismissRequest={() => setOpen(false)}>
                     <Column modifiers={[paddingAll(16)]}>
