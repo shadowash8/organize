@@ -1,16 +1,20 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import {
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider,
+} from "@react-navigation/native";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useEffect, useState } from 'react';
-import { getData, storeData } from '@/hooks/storage';
-import { Directory } from 'expo-file-system';
-import { Alert, BackHandler } from 'react-native';
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useEffect, useState } from "react";
+import { getData, storeData } from "@/hooks/storage";
+import { Directory } from "expo-file-system";
+import { Alert, BackHandler } from "react-native";
 
 export const unstable_settings = {
-    anchor: '(tabs)',
+    anchor: "(tabs)",
 };
 
 export default function RootLayout() {
@@ -31,10 +35,14 @@ export default function RootLayout() {
                     text: "Choose Folder",
                     onPress: async () => {
                         try {
-                            const directory = await Directory.pickDirectoryAsync();
+                            const directory =
+                                await Directory.pickDirectoryAsync();
 
                             if (directory) {
-                                await storeData('org_folder_uri', directory.uri);
+                                await storeData(
+                                    "org_folder_uri",
+                                    directory.uri,
+                                );
                                 setIsReady(true); // Proceed to app
                             } else {
                                 promptUser(); // User dismissed picker, ask again
@@ -45,13 +53,29 @@ export default function RootLayout() {
                     },
                 },
             ],
-            { cancelable: false } // Force them to choose
+            { cancelable: false }, // Force them to choose
         );
+    };
+
+    const initDefaults = async () => {
+        const defaults: Record<string, string> = {
+            show_done: "true",
+            show_no_keyword: "true",
+            default_open: "false",
+            calendar_view: "schedule",
+        };
+        for (const [key, value] of Object.entries(defaults)) {
+            const existing = await getData(key);
+            if (existing === null) {
+                await storeData(key, value);
+            }
+        }
     };
 
     useEffect(() => {
         const checkFolder = async () => {
-            const savedPath = await getData('org_folder_uri');
+            await initDefaults();
+            const savedPath = await getData("org_folder_uri");
             if (savedPath) {
                 setIsReady(true);
             } else {
@@ -67,9 +91,10 @@ export default function RootLayout() {
         return null;
     }
 
-
     return (
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
             <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack>

@@ -27,7 +27,10 @@ export function ThemedToggle({
     ...otherProps
 }: ThemedToggleProps) {
     const [open, setOpen] = useState(defaultOpen);
-    const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, "background");
+    const backgroundColor = useThemeColor(
+        { light: lightColor, dark: darkColor },
+        "background",
+    );
     const itemColor = useThemeColor({}, "surface");
     const borderColor = useThemeColor({}, "border");
     const iconColor = useThemeColor({}, "text");
@@ -42,22 +45,27 @@ export function ThemedToggle({
         >
             <TouchableOpacity
                 onPress={() => setOpen((o) => !o)}
-                style={[styles.heading, { borderColor, backgroundColor: itemColor }]}
+                style={[
+                    styles.heading,
+                    { borderColor, backgroundColor: itemColor },
+                ]}
             >
                 <IconSymbol
                     name={open ? "chevron.down" : "chevron.right"}
                     size={18}
                     color={iconColor}
                 />
-                <ThemedText style={styles.headingText}>{prettyHeading}</ThemedText>
+                <ThemedText style={styles.headingText}>
+                    {prettyHeading}
+                </ThemedText>
             </TouchableOpacity>
 
-            {
-                open && (
-                    <View style={[styles.content, { borderColor }]}>{children}</View>
-                )
-            }
-        </View >
+            {open && (
+                <View style={[styles.content, { borderColor }]}>
+                    {children}
+                </View>
+            )}
+        </View>
     );
 }
 
