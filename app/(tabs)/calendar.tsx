@@ -11,8 +11,9 @@ import { ThemedLoader } from "@/components/themed-loader";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { useFocusEffect } from "@react-navigation/native";
 import { getData } from "@/hooks/storage";
+import { CalendarViewType, ScheduleDurationType } from "@types/data";
 
-function getScheduleEndDate(duration: "7days" | "month" | "year"): Date {
+function getScheduleEndDate(duration: ScheduleDurationType): Date {
     const now = new Date();
     switch (duration) {
         case "7days":
@@ -40,10 +41,10 @@ export default function CalendarScreen() {
     const [items, setItems] = useState<OrgItem[]>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [calendarHeight, setCalendarHeight] = useState(0);
-    const [mode, setMode] = useState<"schedule" | "week" | "month">("schedule");
-    const [scheduleDuration, setScheduleDuration] = useState<
-        "7days" | "month" | "year"
-    >("7days");
+    const [calendarView, setCalendarView] =
+        useState<CalendarViewType>("schedule");
+    const [scheduleDuration, setScheduleDuration] =
+        useState<ScheduleDurationType>("7days");
 
     // colors
     const accent = useThemeColor({}, "accent");
@@ -82,7 +83,7 @@ export default function CalendarScreen() {
     useFocusEffect(
         useCallback(() => {
             getData("calendar_view").then((v) => {
-                if (v) setMode(v as any);
+                if (v) setCalendarView(v as any);
             });
             getData("schedule_duration").then((v) => {
                 if (v) setScheduleDuration(v as ScheduleDuration);
@@ -93,11 +94,11 @@ export default function CalendarScreen() {
     const allEvents = useMemo(() => uniOrgToCalendar(items), [items]);
 
     const events = useMemo(() => {
-        if (mode !== "schedule") return allEvents;
+        if (calendarView !== "schedule") return allEvents;
         const now = new Date();
         const end = getScheduleEndDate(scheduleDuration);
         return allEvents.filter((e) => e.start >= now && e.start <= end);
-    }, [allEvents, mode, scheduleDuration]);
+    }, [allEvents, calendarView, scheduleDuration]);
 
     if (refreshing) {
         return <ThemedLoader center size="large" />;
@@ -129,7 +130,7 @@ export default function CalendarScreen() {
             <Calendar
                 events={events}
                 height={calendarHeight}
-                mode={mode}
+                mode={calendarView}
                 theme={calendarTheme}
             />
         </ThemedView>

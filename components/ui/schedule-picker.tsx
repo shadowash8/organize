@@ -7,11 +7,11 @@ import {
 } from "@expo/ui/jetpack-compose";
 import { paddingAll, fillMaxWidth } from "@expo/ui/jetpack-compose/modifiers";
 import { ThemedButton } from "@/components/themed-button";
+import { ScheduleDurationType } from "@types/data";
 
 const SCHEDULE_DURATIONS = ["7days", "month", "year"] as const;
-type ScheduleDuration = (typeof SCHEDULE_DURATIONS)[number];
 
-const DURATION_LABELS: Record<ScheduleDuration, string> = {
+const DURATION_LABELS: Record<ScheduleDurationType, string> = {
     "7days": "7 Days",
     month: "Month",
     year: "Year",

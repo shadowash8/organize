@@ -7,16 +7,16 @@ import {
 } from "@expo/ui/jetpack-compose";
 import { paddingAll, fillMaxWidth } from "@expo/ui/jetpack-compose/modifiers";
 import { ThemedButton } from "@/components/themed-button";
+import { CalendarViewType } from "@types/data";
 
 const CALENDAR_VIEWS = ["schedule", "week", "month"] as const;
-type CalendarView = (typeof CALENDAR_VIEWS)[number];
 
 export function CalendarViewPicker({
     value,
     onChange,
 }: {
     value: string;
-    onChange: (v: CalendarView) => void;
+    onChange: (v: CalendarViewType) => void;
 }) {
     const [open, setOpen] = useState(false);
 

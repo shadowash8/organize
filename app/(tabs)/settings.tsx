@@ -8,6 +8,7 @@ import { Directory } from "expo-file-system";
 import { clearOrgCache, getOrgItems } from "@/hooks/org-docs";
 import { CalendarViewPicker } from "@/components/ui/calendar-view";
 import { ScheduleDurationPicker } from "@/components/ui/schedule-picker";
+import { CalendarViewType, ScheduleDurationType } from "@types/data";
 import { Host, Switch } from "@expo/ui/jetpack-compose";
 
 function NativeSwitch({
@@ -26,13 +27,12 @@ function NativeSwitch({
 
 export default function SettingsScreen() {
     const [folderUri, setFolderUri] = useState<string | null>(null);
-    const [calendarView, setCalendarView] = useState<
-        "schedule" | "week" | "month"
-    >("schedule");
     const [showDone, setShowDone] = useState(true);
     const [showNoKeyword, setShowNoKeyword] = useState(true);
     const [defaultOpen, setDefaultOpen] = useState(false);
-    const [scheduleDuration, setScheduleDuration] = useState<"7days" | "month" | "year">("7days");
+    const [calendarView, setCalendarView] = useState<CalendarView>("schedule");
+    const [scheduleDuration, setScheduleDuration] =
+        useState<ScheduleDurationType>("7days");
 
     useEffect(() => {
         getData("org_folder_uri").then(setFolderUri);
