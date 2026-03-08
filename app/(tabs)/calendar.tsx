@@ -12,11 +12,38 @@ import { useThemeColor } from "@/hooks/use-theme-color";
 import { useFocusEffect } from "@react-navigation/native";
 import { getData } from "@/hooks/storage";
 
+function getScheduleEndDate(duration: "7days" | "month" | "year"): Date {
+    const now = new Date();
+    switch (duration) {
+        case "7days":
+            return new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate() + 7,
+            );
+        case "month":
+            return new Date(
+                now.getFullYear(),
+                now.getMonth() + 1,
+                now.getDate(),
+            );
+        case "year":
+            return new Date(
+                now.getFullYear() + 1,
+                now.getMonth(),
+                now.getDate(),
+            );
+    }
+}
+
 export default function CalendarScreen() {
     const [items, setItems] = useState<OrgItem[]>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [calendarHeight, setCalendarHeight] = useState(0);
     const [mode, setMode] = useState<"schedule" | "week" | "month">("schedule");
+    const [scheduleDuration, setScheduleDuration] = useState<
+        "7days" | "month" | "year"
+    >("7days");
 
     // colors
     const accent = useThemeColor({}, "accent");
@@ -57,10 +84,20 @@ export default function CalendarScreen() {
             getData("calendar_view").then((v) => {
                 if (v) setMode(v as any);
             });
+            getData("schedule_duration").then((v) => {
+                if (v) setScheduleDuration(v as ScheduleDuration);
+            });
         }, []),
     );
 
-    const events = useMemo(() => uniOrgToCalendar(items), [items]);
+    const allEvents = useMemo(() => uniOrgToCalendar(items), [items]);
+
+    const events = useMemo(() => {
+        if (mode !== "schedule") return allEvents;
+        const now = new Date();
+        const end = getScheduleEndDate(scheduleDuration);
+        return allEvents.filter((e) => e.start >= now && e.start <= end);
+    }, [allEvents, mode, scheduleDuration]);
 
     if (refreshing) {
         return <ThemedLoader center size="large" />;

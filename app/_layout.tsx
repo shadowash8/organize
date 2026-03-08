@@ -63,6 +63,7 @@ export default function RootLayout() {
             show_no_keyword: "true",
             default_open: "false",
             calendar_view: "schedule",
+            schedule_duration: "7days",
         };
         for (const [key, value] of Object.entries(defaults)) {
             const existing = await getData(key);

@@ -6,7 +6,8 @@ import { getData, storeData } from "@/hooks/storage";
 import { ThemedSectionRow } from "@/components/themed-section-row";
 import { Directory } from "expo-file-system";
 import { clearOrgCache, getOrgItems } from "@/hooks/org-docs";
-import { CalendarViewPicker } from "@/components/calendar-view";
+import { CalendarViewPicker } from "@/components/ui/calendar-view";
+import { ScheduleDurationPicker } from "@/components/ui/schedule-picker";
 import { Host, Switch } from "@expo/ui/jetpack-compose";
 
 function NativeSwitch({
@@ -31,6 +32,7 @@ export default function SettingsScreen() {
     const [showDone, setShowDone] = useState(true);
     const [showNoKeyword, setShowNoKeyword] = useState(true);
     const [defaultOpen, setDefaultOpen] = useState(false);
+    const [scheduleDuration, setScheduleDuration] = useState<"7days" | "month" | "year">("7days");
 
     useEffect(() => {
         getData("org_folder_uri").then(setFolderUri);
@@ -45,6 +47,9 @@ export default function SettingsScreen() {
         });
         getData("default_open").then((v) => {
             if (v !== null) setDefaultOpen(v === "true");
+        });
+        getData("schedule_duration").then((v) => {
+            if (v) setScheduleDuration(v as ScheduleDuration);
         });
     }, []);
 
@@ -122,6 +127,21 @@ export default function SettingsScreen() {
                         />
                     }
                 />
+                {calendarView === "schedule" && (
+                    <ThemedSectionRow
+                        title="Schedule list duration"
+                        description={`Current: ${scheduleDuration}`}
+                        action={
+                            <ScheduleDurationPicker
+                                value={scheduleDuration}
+                                onChange={async (v) => {
+                                    setScheduleDuration(v);
+                                    await storeData("schedule_duration", v);
+                                }}
+                            />
+                        }
+                    />
+                )}
                 <ThemedSectionRow
                     title="Org Folder"
                     description={name}
