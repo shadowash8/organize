@@ -1,5 +1,3 @@
-TITLE: Organize
-
 * Organize
 A all in one mobile app to read your org notes and agenda in a beautiful manner on your phone
 
@@ -13,6 +11,12 @@ A all in one mobile app to read your org notes and agenda in a beautiful manner 
 - uniorg-parse
 - react-native-big-calendar
 - AsyncStorage
+
+* Screenshots
+| Home                   | Calendar                                                              | Settings                       |
+|------------------------+-----------------------------------------------------------------------+--------------------------------|
+| [[./screenshots/home.jpg]] | [[./screenshots/calendar_schedule.jpg]]  [[./screenshots/calendar_month.jpg]] | [[./screenshots/settings.jpg]] |
+
 
 * Setup
 #+begin_src bash
