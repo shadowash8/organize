@@ -16,36 +16,41 @@ function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.React
         <View style={{ marginLeft: (item.level - 1) * 8 }}>
             <TouchableOpacity
                 onPress={() => setOpen(o => !o)}
-                style={styles.row}
+                style={styles.touchableRow}
                 disabled={!children}
             >
+                {children ? (
+                    <IconSymbol name={open ? 'chevron.down' : 'chevron.right'} size={18} color={iconColor} />
+                ) : (
+                    <View style={styles.bulletContainer}>
+                        <IconSymbol name='circle.fill' size={6} color={iconColor} />
+                    </View>
+                )}
 
-                <View style={{ flexDirection: 'column' }}>
-                    <View style={styles.row}
-                    >
-                        {children
-                            ? <IconSymbol name={open ? 'chevron.down' : 'chevron.right'} size={18} color={iconColor} />
-                            : <IconSymbol name='circle.fill' size={6} color={iconColor} style={{ marginHorizontal: 6 }} />
-                        }
+                <View style={styles.contentColumn}>
+                    <View style={styles.textRow}>
                         {item.todoKeyword && (
                             <ThemedText style={[styles.keyword, { color: todoColor }]}>
                                 {item.todoKeyword}
                             </ThemedText>
                         )}
-                        <RenderLinks title={item.title} style={[styles.title, (item.todoKeyword === 'DONE' || item.todoKeyword === 'CANC') && styles.done]} />
+                        <RenderLinks
+                            title={item.title}
+                            style={[styles.title, (item.todoKeyword === 'DONE' || item.todoKeyword === 'CANC') && styles.done]}
+                        />
                     </View>
+
                     {item.deadline && (
-                        <ThemedText style={{ paddingLeft: 30, fontSize: 12, opacity: 0.6 }}>
+                        <ThemedText style={styles.metaText}>
                             deadline: {item.deadline.year}-{item.deadline.month}-{item.deadline.day}
                         </ThemedText>
                     )}
                     {item.scheduled && (
-                        <ThemedText style={{ paddingLeft: 30, fontSize: 12, opacity: 0.6 }}>
+                        <ThemedText style={styles.metaText}>
                             scheduled: {item.scheduled.year}-{item.scheduled.month}-{item.scheduled.day}
                         </ThemedText>
                     )}
                 </View>
-
             </TouchableOpacity>
 
             {open && children && (
@@ -56,16 +61,29 @@ function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.React
         </View>
     );
 }
+
 const styles = StyleSheet.create({
-    row: {
+    touchableRow: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: 6,
         paddingVertical: 5,
     },
-    arrow: {
-        fontSize: 12,
-        width: 12,
+    bulletContainer: {
+        height: 20,
+        width: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    contentColumn: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    textRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: 6,
     },
     keyword: {
         fontSize: 11,
@@ -73,6 +91,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 14,
+        flexShrink: 1,
+    },
+    metaText: {
+        paddingLeft: 6,
+        fontSize: 12,
+        opacity: 0.6,
     },
     done: {
         textDecorationLine: 'line-through',
@@ -80,7 +104,6 @@ const styles = StyleSheet.create({
     },
     children: {
         borderLeftWidth: 1,
-        marginLeft: 6,
         paddingLeft: 8,
     },
 });
@@ -108,5 +131,5 @@ export function OrgTree({ items }: { items: OrgItem[] }) {
     }
 
     const [tree] = buildTree(items, 1, 0);
-    return <View>{tree}</View>;
+    return <View style={{ width: '100%' }}>{tree}</View>;
 }
