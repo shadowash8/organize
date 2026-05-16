@@ -40,6 +40,11 @@ function OrgTreeItem({ item, children }: { item: OrgItem; children?: React.React
                         />
                     </View>
 
+                    {item.description && (
+                        <ThemedText style={styles.descriptionText}>
+                            {item.description}
+                        </ThemedText>
+                    )}
                     {item.deadline && (
                         <ThemedText style={styles.metaText}>
                             deadline: {item.deadline.year}-{item.deadline.month}-{item.deadline.day}
@@ -97,6 +102,13 @@ const styles = StyleSheet.create({
         paddingLeft: 6,
         fontSize: 12,
         opacity: 0.6,
+    },
+    descriptionText: {
+        paddingLeft: 6,
+        fontSize: 13,
+        color: '#666',
+        marginTop: 2,
+        marginBottom: 2,
     },
     done: {
         textDecorationLine: 'line-through',

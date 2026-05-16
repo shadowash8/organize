@@ -20,7 +20,6 @@ export function extractItems(ast: any, sourceUri: string): OrgItem[] {
                     sourceUri,
                 };
 
-                // look ahead for planning and description in siblings
                 const next = nodes[i + 1];
                 const after = nodes[i + 2];
 
@@ -29,16 +28,38 @@ export function extractItems(ast: any, sourceUri: string): OrgItem[] {
                     if (next.deadline) item.deadline = next.deadline.start;
                 }
 
-                // check for description list (not a state log)
-                const listNode = next?.type === 'plain-list' ? next : after?.type === 'plain-list' ? after : null;
-                if (listNode) {
-                    const text = listNode.children
-                        .flatMap((li: any) => li.children)
-                        .flatMap((p: any) => p.children)
-                        .filter((c: any) => c.type === 'text' && !c.value.startsWith('State "'))
-                        .map((c: any) => c.value.trim())
-                        .join(' ');
-                    if (text) item.description = text;
+                const bodyNode = next?.type === 'paragraph' || next?.type === 'plain-list'
+                    ? next
+                    : after?.type === 'paragraph' || after?.type === 'plain-list'
+                        ? after
+                        : null;
+
+                if (bodyNode) {
+                    if (bodyNode.type === 'paragraph') {
+                        const text = (bodyNode.children || [])
+                            .filter((c: any) => c.type === 'text')
+                            .map((c: any) => c.value.trim())
+                            .join(' ');
+                        if (text) item.description = text;
+                    }
+
+                    else if (bodyNode.type === 'plain-list') {
+                        // process each list item individually so we can preserve line breaks
+                        const lines = (bodyNode.children || [])
+                            .map((li: any) => {
+                                return (li.children || [])
+                                    .flatMap((p: any) => p.children || [])
+                                    .filter((c: any) => c.type === 'text' && !c.value.startsWith('State "'))
+                                    .map((c: any) => c.value.trim())
+                                    .join(' ');
+                            })
+                            .filter((line: string) => line.length > 0);
+
+                        // join items with a newline character (\n) instead of a space (' ')
+                        if (lines.length > 0) {
+                            item.description = lines.join('\n');
+                        }
+                    }
                 }
 
                 items.push(item);
