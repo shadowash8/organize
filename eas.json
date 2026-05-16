@@ -9,8 +9,7 @@
       "distribution": "internal",
       "env": {
         "APP_VARIANT": "dev"
-      },
-
+      }
     },
     "preview": {
       "distribution": "internal"
