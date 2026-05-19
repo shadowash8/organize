@@ -1,10 +1,15 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import listFilesInDir from '@/hooks/list-files-in-dir';
 import { getData, storeData } from '@/hooks/storage';
-import { parse } from 'uniorg-parse/lib/parser';
+import parse from 'uniorg-parse';
 import { OrgItem } from '@/types/org';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NoteFile } from '@/types/note';
+import { unified } from 'unified';
+import uniorg2rehype from 'uniorg-rehype';
+import stringify from 'rehype-stringify';
 
+// ORG-Mode
 export function extractItems(ast: any, sourceUri: string): OrgItem[] {
     const items: OrgItem[] = [];
 
@@ -82,13 +87,21 @@ export async function getOrgItems(refresh = false): Promise<OrgItem[]> {
     const paths = await getOrgDocsPaths();
     const allItems: OrgItem[] = [];
 
+    const processor = unified().use(parse, {
+        todoKeywords: ['TODO', 'WORKING', 'WAIT', 'IDEA', 'DONE', 'CANC']
+    });
+
     for (const uri of paths) {
-        const content = await readOrgFile(uri);
-        const ast = parse(content, {
-            todoKeywords: ['TODO', 'WORKING', 'WAIT', 'IDEA', 'DONE', 'CANC']
-        });
-        const items = extractItems(ast, uri);
-        allItems.push(...items);
+        try {
+            const content = await readOrgFile(uri);
+
+            const ast = processor.parse(content) as any;
+
+            const items = extractItems(ast, uri);
+            allItems.push(...items);
+        } catch (fileError) {
+            console.error(`Skipping file due to an error reading ${uri}:`, fileError);
+        }
     }
 
     await storeData('org_items', JSON.stringify(allItems));
@@ -129,4 +142,61 @@ export async function getOrgDocsPaths(refresh = false) {
 
 export async function clearOrgCache() {
     await AsyncStorage.multiRemove(["org_docs", "org_docs_path", "org_items"]);
+}
+
+// --- ORG-ROAM ---
+export async function getNote(uri: string): Promise<NoteFile | null> {
+    try {
+        const fileContents = await readOrgFile(uri);
+
+        // Let unified map the Org AST into an HTML AST (hast) and stringify it
+        const fileResult = await unified()
+            .use(parse, {
+                todoKeywords: ['TODO', 'WORKING', 'WAIT', 'DONE']
+            })
+            .use(uniorg2rehype)
+            .use(stringify)
+            .process(fileContents);
+
+        const htmlString = String(fileResult);
+        const filename = decodeURIComponent(uri).split('/').pop() ?? uri;
+
+        return {
+            uri,
+            filename,
+            title: filename.replace('.org', ''),
+            preview: fileContents.slice(0, 100).replace(/[*~]/g, '') + '...',
+            content: htmlString,
+            wordCount: fileContents.split(/\s+/).filter(Boolean).length
+        };
+
+    } catch (e) {
+        console.error("Error generating clean HTML note with unified:", e);
+        return null;
+    }
+}
+
+export async function getNotes(refresh = false): Promise<NoteFile[]> {
+    if (!refresh) {
+        const cached = await getData('notes_files');
+        if (cached) return JSON.parse(cached) as NoteFile[];
+    }
+
+    const folderUri = await getData('notes_folder_uri');
+    if (!folderUri) return [];
+
+    const result = await listFilesInDir(folderUri);
+    const paths = (result ?? []).filter(uri => uri.endsWith('.org'));
+    if (paths.length === 0) return [];
+
+    const notesResults = await Promise.all(paths.map(p => getNote(p)));
+    // Filter away files that failed silently to load cleanly
+    const notes = notesResults.filter((note): note is NoteFile => note !== null);
+
+    await storeData('notes_files', JSON.stringify(notes));
+    return notes;
+}
+
+export async function clearNotesCache() {
+    await AsyncStorage.removeItem('notes_files');
 }

@@ -55,6 +55,41 @@ export default function RootLayout() {
             ],
             { cancelable: false }, // Force them to choose
         );
+
+
+        Alert.alert(
+            "Setup Required",
+            "Please select a folder for your Notes to continue.",
+            [
+                {
+                    text: "Quit",
+                    onPress: () => BackHandler.exitApp(), // Closes the app on Android
+                    style: "cancel",
+                },
+                {
+                    text: "Choose Folder",
+                    onPress: async () => {
+                        try {
+                            const directory =
+                                await Directory.pickDirectoryAsync();
+
+                            if (directory) {
+                                await storeData(
+                                    "notes_folder_uri",
+                                    directory.uri,
+                                );
+                                setIsReady(true); // Proceed to app
+                            } else {
+                                promptUser(); // User dismissed picker, ask again
+                            }
+                        } catch (e: any) {
+                            promptUser();
+                        }
+                    },
+                },
+            ],
+            { cancelable: false }, // Force them to choose
+        );
     };
 
     const initDefaults = async () => {
@@ -98,6 +133,7 @@ export default function RootLayout() {
         >
             <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="note-detail" />
             </Stack>
             <StatusBar style="auto" />
         </ThemeProvider>

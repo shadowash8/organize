@@ -5,10 +5,9 @@ import { useEffect, useState } from "react";
 import { getData, storeData } from "@/hooks/storage";
 import { ThemedSectionRow } from "@/components/themed-section-row";
 import { Directory } from "expo-file-system";
-import { clearOrgCache, getOrgItems } from "@/hooks/org-docs";
+import { clearNotesCache, clearOrgCache, getOrgItems } from "@/hooks/org-docs";
 import { CalendarViewPicker } from "@/components/ui/calendar-view";
 import { ScheduleDurationPicker } from "@/components/ui/schedule-picker";
-import { CalendarViewType, ScheduleDurationType } from "@types/data";
 import { Host, Switch } from "@expo/ui/jetpack-compose";
 
 function NativeSwitch({
@@ -26,7 +25,8 @@ function NativeSwitch({
 }
 
 export default function SettingsScreen() {
-    const [folderUri, setFolderUri] = useState<string | null>(null);
+    const [orgFolderUri, setOrgFolderUri] = useState<string | null>(null);
+    const [notesFolderUri, setNotesFolderUri] = useState<string | null>(null);
     const [showDone, setShowDone] = useState(true);
     const [showNoKeyword, setShowNoKeyword] = useState(true);
     const [defaultOpen, setDefaultOpen] = useState(false);
@@ -35,7 +35,8 @@ export default function SettingsScreen() {
         useState<ScheduleDurationType>("7days");
 
     useEffect(() => {
-        getData("org_folder_uri").then(setFolderUri);
+        getData("org_folder_uri").then(setOrgFolderUri);
+        getData("notes_folder_uri").then(setNotesFolderUri);
         getData("calendar_view").then((v) => {
             if (v) setCalendarView(v as any);
         });
@@ -53,7 +54,7 @@ export default function SettingsScreen() {
         });
     }, []);
 
-    const changeFolder = async () => {
+    const changeOrgFolder = async () => {
         try {
             const directory = await Directory.pickDirectoryAsync();
             if (directory) {
@@ -62,14 +63,33 @@ export default function SettingsScreen() {
                 await clearOrgCache();
                 await getOrgItems(true);
             }
-        } catch (e) {}
+        } catch (e) { }
     };
 
-    const name = folderUri
-        ? (decodeURIComponent(folderUri)
-              .split(":")
-              .pop()
-              ?.replace(/\//g, "/") ?? folderUri)
+    const changeNotesFolder = async () => {
+        try {
+            const directory = await Directory.pickDirectoryAsync();
+            if (directory) {
+                await storeData("notes_folder_uri", directory.uri);
+                setFolderUri(directory.uri);
+                await clearNotesCache();
+            }
+        } catch (e) { }
+    };
+
+    const orgFolder = orgFolderUri
+        ? (decodeURIComponent(orgFolderUri)
+            .split(":")
+            .pop()
+            ?.replace(/\//g, "/") ?? orgFolderUri)
+        : "None selected";
+
+
+    const notesFolder = notesFolderUri
+        ? (decodeURIComponent(notesFolderUri)
+            .split(":")
+            .pop()
+            ?.replace(/\//g, "/") ?? notesFolderUri)
         : "None selected";
 
     return (
@@ -144,9 +164,16 @@ export default function SettingsScreen() {
                 )}
                 <ThemedSectionRow
                     title="Org Folder"
-                    description={name}
+                    description={orgFolder}
                     action={
-                        <ThemedButton title="Change" onPress={changeFolder} />
+                        <ThemedButton title="Change" onPress={changeOrgFolder} />
+                    }
+                />
+                <ThemedSectionRow
+                    title="Notes Folder"
+                    description={notesFolder}
+                    action={
+                        <ThemedButton title="Change" onPress={changeNotesFolder} />
                     }
                 />
                 <ThemedSectionRow
